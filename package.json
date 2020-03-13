@@ -1,0 +1,17 @@
+{
+  "name": "typescript-boilerplate",
+  "version": "1.0.0",
+  "description": "Covalence TS boilerplate",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build" : "tsc",
+    "dev": "tsc -w **/*.ts --outDir build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^3.8.3"
+  }
+}

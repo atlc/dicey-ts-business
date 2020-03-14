@@ -3,8 +3,10 @@ let diceLog: Array<Die> = [];
 let diceContainer: HTMLElement = document.getElementById('diceContainer');
 let newDieVal: number;
 let dieHTMLString: string;
+let imgPath: string;
+let maxDiceValue: number = 6;
 
-let removeAll = () => {
+let removeAllPrompt = () => {
     Swal.fire({
         title: 'Are you sure you want to delete your dice?',
         text: "You won't ever be able to get them back!",
@@ -21,8 +23,7 @@ let removeAll = () => {
         `
       }).then((result) => {
         if (result.value) {
-            [...diceContainer.children].forEach(child => child.parentNode.removeChild(child))
-            diceLog = [];
+            removeAll();
             Swal.fire({
                 title: 'Deleted!',
                 text: 'Your dice have been deleted.',
@@ -38,10 +39,16 @@ let removeAll = () => {
     })
 }
 
+let removeAll = () => {
+    [...diceContainer.children].forEach(child => child.parentNode.removeChild(child))
+    diceLog = [];
+}
+
 let reroll = () => {
     diceLog.forEach(die => {
         die.value = die.roll();
-        dieHTMLString = `<figure class='image is-128x128'><img src="https://bulma.io/images/placeholders/128x128.png"><p class='has-text-centered has-text-grey-darker'>Dice value is ${newDieVal}</p></figure>`;
+        imgPath = d20mode ? `d20-${this.value}.png` : `dice0${this.value}.png`
+        dieHTMLString = `<figure class='image is-128x128'><img src="../assets/images/${imgPath}"><p class='has-text-centered has-text-grey-darker'>Dice value is ${newDieVal}</p></figure>`;
         die.newDie.innerHTML = `${dieHTMLString}`;
     });
 }
@@ -57,7 +64,7 @@ let sumTheDice = () => {
 
 document.getElementById('genDie').addEventListener('click', function() { diceLog.push(new Die());});
 document.getElementById('reroll').addEventListener('click', reroll);
-document.getElementById('removeAll').addEventListener('click', removeAll);
+document.getElementById('removeAll').addEventListener('click', removeAllPrompt);
 document.getElementById('sumTheDice').addEventListener('click', sumTheDice);
 
 
@@ -69,13 +76,14 @@ class Die {
     constructor() {
         this.value = this.roll();
         this.newDie.className = 'column';
-        dieHTMLString = `<figure class='image is-128x128'><img src="https://bulma.io/images/placeholders/128x128.png"><p class='has-text-centered has-text-grey-darker'>Dice value is ${newDieVal}</p></figure>`;
+        imgPath = d20mode ? `d20-${this.value}.png` : `dice0${this.value}.png`
+        dieHTMLString = `<figure class='image is-128x128'><img src="../assets/images/${imgPath}"><p class='has-text-centered has-text-grey-darker'>Dice value is ${newDieVal}</p></figure>`;
         this.newDie.innerHTML = dieHTMLString;
         this.diceContainer.appendChild(this.newDie);
     }
 
     roll(): number {
-        return newDieVal = Math.floor((Math.random() * 6) + 1);
+        return newDieVal = Math.floor((Math.random() * maxDiceValue) + 1);
     }
 }
 
@@ -96,10 +104,12 @@ let d20listener = function(event) {
         keyHits = 0;
         Swal.fire(
             'D20 mode activated!',
-            "This took a while to code & to source the images; y'all owe me a beer!",
+            "This took a while to code & to source and create the images; every few visitors probably owes me a beer!",
             'success'
         );
+        removeAll();
         d20mode = !d20mode;
+        maxDiceValue = d20mode ?  20 : 6
     }
 }
 

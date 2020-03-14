@@ -3,13 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dicey Typescript Business</title>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <link rel='stylesheet' type='text/css' href='style.css'>
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </head>
 <body>
-    <button id='#generate'>Generate Die</button>
+    <div class="columns is-mobile is-centered is-multiline">
+        <div class="column">
+            <button class="button is-medium is-rounded is-info is-outlined" id="genDie">Generate Die</button>
+        </div>
+        <div class="column">
+            <button class="button is-medium is-rounded is-info is-outlined" id="reroll">Re-roll all dice</button>
+        </div>
+        <div class="column">
+            <button class="button is-medium is-rounded is-info is-outlined" id="sumTheDice">Sum value of all dice</button>
+        </div>
+        <div class="column">
+            <button class="button is-medium is-rounded is-danger is-outlined" id="removeAll">Remove ALL dice</button>
+        </div>
+    </div>
+    <div class="columns is-mobile is-centered is-multiline" id="diceContainer"></div>
     <script src='index.js'></script>
 </body>
 </html>

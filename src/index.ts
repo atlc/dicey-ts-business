@@ -40,7 +40,7 @@ let removeAllPrompt = () => {
 }
 
 let removeAll = () => {
-    [...diceContainer.children].forEach(child => child.parentNode.removeChild(child))
+    Array.prototype.slice.call(diceContainer.children).forEach(child => child.parentNode.removeChild(child))
     diceLog = [];
 }
 

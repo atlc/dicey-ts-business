@@ -1,10 +1,3 @@
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 var _this = this;
 var Swal; // To suppress browser and TS warnings since it's pulled from the CDN
 var diceLog = [];
@@ -36,7 +29,7 @@ var removeAllPrompt = function () {
     });
 };
 var removeAll = function () {
-    __spreadArrays(diceContainer.children).forEach(function (child) { return child.parentNode.removeChild(child); });
+    Array.prototype.slice.call(diceContainer.children).forEach(function (child) { return child.parentNode.removeChild(child); });
     diceLog = [];
 };
 var reroll = function () {

@@ -1,4 +1,3 @@
-var _this = this;
 var Swal; // To suppress browser and TS warnings since it's pulled from the CDN
 var diceLog = [];
 var diceContainer = document.getElementById('diceContainer');
@@ -35,7 +34,7 @@ var removeAll = function () {
 var reroll = function () {
     diceLog.forEach(function (die) {
         die.value = die.roll();
-        imgPath = d20mode ? "d20-" + _this.value + ".png" : "dice0" + _this.value + ".png";
+        imgPath = d20mode ? "d20-" + die.value + ".png" : "dice0" + die.value + ".png";
         dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"><p class='has-text-centered has-text-grey-darker'>Dice value is " + newDieVal + "</p></figure>";
         die.newDie.innerHTML = "" + dieHTMLString;
     });

@@ -35,7 +35,7 @@ var reroll = function () {
     diceLog.forEach(function (die) {
         die.value = die.roll();
         imgPath = d20mode ? "d20-" + die.value + ".png" : "dice0" + die.value + ".png";
-        dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"><p class='has-text-centered has-text-grey-darker'>Dice value is " + newDieVal + "</p></figure>";
+        dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"></figure>";
         die.newDie.innerHTML = "" + dieHTMLString;
     });
 };
@@ -57,7 +57,7 @@ var Die = /** @class */ (function () {
         this.value = this.roll();
         this.newDie.className = 'column';
         imgPath = d20mode ? "d20-" + this.value + ".png" : "dice0" + this.value + ".png";
-        dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"><p class='has-text-centered has-text-grey-darker'>Dice value is " + newDieVal + "</p></figure>";
+        dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"></figure>";
         this.newDie.innerHTML = dieHTMLString;
         this.diceContainer.appendChild(this.newDie);
     }

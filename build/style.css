@@ -1,3 +1,7 @@
+html {
+    background-color:  	hsl(48, 100%, 70%);
+}
+
 .column {
     display: flex;
     justify-content: center;

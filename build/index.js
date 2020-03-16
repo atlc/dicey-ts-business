@@ -1,10 +1,35 @@
 var Swal; // To suppress browser and TS warnings since it's pulled from the CDN
 var diceLog = [];
 var diceContainer = document.getElementById('diceContainer');
-var newDieVal;
 var dieHTMLString;
 var imgPath;
-var maxDiceValue = 6;
+var maxDiceValue = 6; // Initializing as a standard dice roll, until d20 mode is activated
+var Die = /** @class */ (function () {
+    function Die() {
+        this.value = this.roll();
+        this.id = this.createID();
+    }
+    // Returns 16 digit ID string off Math.random() seed converted to base 36
+    Die.prototype.createID = function () {
+        return Math.random().toString(36).substr(2, 16);
+    };
+    Die.prototype.roll = function () {
+        return Math.floor((Math.random() * maxDiceValue) + 1);
+    };
+    return Die;
+}());
+function generateDie() {
+    var die = new Die();
+    var dieDiv = document.createElement('div');
+    dieDiv.className = 'column';
+    imgPath = d20mode ? "d20-" + die.value + ".png" : "dice0" + die.value + ".png";
+    dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"></figure>";
+    dieDiv.innerHTML = dieHTMLString;
+    dieDiv.addEventListener('click', function () { return rerollSingleDie(die.id); });
+    dieDiv.addEventListener('dblclick', function () { return removeSingleDie(die.id); });
+    diceContainer.appendChild(dieDiv);
+    diceLog.push(die);
+}
 var removeAllPrompt = function () {
     Swal.fire({
         title: 'Are you sure you want to delete your dice?',
@@ -32,48 +57,39 @@ var removeAll = function () {
     diceLog = [];
 };
 var reroll = function () {
-    diceLog.forEach(function (die) {
+    diceLog.forEach(function (die, index) {
         die.value = die.roll();
         imgPath = d20mode ? "d20-" + die.value + ".png" : "dice0" + die.value + ".png";
         dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"></figure>";
-        die.newDie.innerHTML = "" + dieHTMLString;
+        diceContainer.children[index].innerHTML = "" + dieHTMLString;
     });
 };
+var rerollSingleDie = function (dieID) {
+    setTimeout(function () {
+        var dieIndex = diceLog.map(function (dice) { return dice.id; }).indexOf(dieID);
+        if (diceLog[dieIndex]) {
+            diceLog[dieIndex].value = diceLog[dieIndex].roll();
+            imgPath = d20mode ? "d20-" + diceLog[dieIndex].value + ".png" : "dice0" + diceLog[dieIndex].value + ".png";
+            dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"></figure>";
+            diceContainer.children[dieIndex].innerHTML = dieHTMLString;
+        }
+    }, 175);
+};
+function removeSingleDie(dieID) {
+    var dieIndex = diceLog.map(function (dice) { return dice.id; }).indexOf(dieID);
+    diceContainer.children[dieIndex].parentNode.removeChild(diceContainer.children[dieIndex]);
+    diceLog.splice(dieIndex, 1);
+}
 var sumTheDice = function () {
     var vals = [];
     diceLog.forEach(function (d) { return vals.push(d.value); });
     var sum = function (total, currentVal) { return total + currentVal; };
-    Swal.fire("Total is " + vals.reduce(sum, 0));
+    Swal.fire("Dice face value totals are: " + vals.reduce(sum, 0));
 };
-// function rerollSingleDie(die) {
-//     console.log(die);
-// }
-// function removeSingleDie(die) {
-//     console.log(die);
-// }
-document.getElementById('genDie').addEventListener('click', function () { diceLog.push(new Die()); });
+document.getElementById('genDie').addEventListener('click', generateDie);
 document.getElementById('reroll').addEventListener('click', reroll);
 document.getElementById('removeAll').addEventListener('click', removeAllPrompt);
 document.getElementById('sumTheDice').addEventListener('click', sumTheDice);
-var Die = /** @class */ (function () {
-    function Die() {
-        this.value = newDieVal;
-        this.diceContainer = diceContainer;
-        this.newDie = document.createElement('div');
-        this.value = this.roll();
-        this.newDie.className = 'column';
-        imgPath = d20mode ? "d20-" + this.value + ".png" : "dice0" + this.value + ".png";
-        dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"></figure>";
-        this.newDie.innerHTML = dieHTMLString;
-        // this.newDie.addEventListener('click', rerollSingleDie(newDie));
-        // this.newDie.addEventListener('dblclick', removeSingleDie(newDie));
-        this.diceContainer.appendChild(this.newDie);
-    }
-    Die.prototype.roll = function () {
-        return newDieVal = Math.floor((Math.random() * maxDiceValue) + 1);
-    };
-    return Die;
-}());
 var d20mode = false;
 var d20KeySeries = ['d', '2', '0'];
 var keyHits = 0;
@@ -85,10 +101,10 @@ var d20listener = function (event) {
     keyHits++;
     if (keyHits === d20KeySeries.length) {
         keyHits = 0;
-        Swal.fire('D20 mode activated!', "This took a while to code & to source and create the images; every few visitors probably owes me a beer!", 'success');
         removeAll();
         d20mode = !d20mode;
         maxDiceValue = d20mode ? 20 : 6;
+        Swal.fire("d20 mode " + (d20mode ? 'activated!' : 'deactivated!'), 'This took a while to code & to source and create the images; how about you toss a beer my way? 😉', "" + (d20mode ? 'success' : 'error'));
     }
 };
 document.addEventListener('keydown', d20listener);

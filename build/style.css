@@ -12,13 +12,12 @@ div > a {
     padding-right: 3px;
 }
 
-.pseudo-footer {
-    display: inline;
-    position: absolute;
-    bottom: 0%;
+footer {
+    position: fixed;
+    bottom: 0;
 }
 
-.pseudo-footer > p {
-    position: relative;
+footer > p {
     text-align: center;
+    font-size: 0.9em;
 }

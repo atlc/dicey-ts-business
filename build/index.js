@@ -45,6 +45,12 @@ var sumTheDice = function () {
     var sum = function (total, currentVal) { return total + currentVal; };
     Swal.fire("Total is " + vals.reduce(sum, 0));
 };
+// function rerollSingleDie(die) {
+//     console.log(die);
+// }
+// function removeSingleDie(die) {
+//     console.log(die);
+// }
 document.getElementById('genDie').addEventListener('click', function () { diceLog.push(new Die()); });
 document.getElementById('reroll').addEventListener('click', reroll);
 document.getElementById('removeAll').addEventListener('click', removeAllPrompt);
@@ -59,6 +65,8 @@ var Die = /** @class */ (function () {
         imgPath = d20mode ? "d20-" + this.value + ".png" : "dice0" + this.value + ".png";
         dieHTMLString = "<figure class='image is-128x128'><img src=\"../assets/images/" + imgPath + "\"></figure>";
         this.newDie.innerHTML = dieHTMLString;
+        // this.newDie.addEventListener('click', rerollSingleDie(newDie));
+        // this.newDie.addEventListener('dblclick', removeSingleDie(newDie));
         this.diceContainer.appendChild(this.newDie);
     }
     Die.prototype.roll = function () {
@@ -83,4 +91,4 @@ var d20listener = function (event) {
         maxDiceValue = d20mode ? 20 : 6;
     }
 };
-document.addEventListener('keydown', d20listener, false);
+document.addEventListener('keydown', d20listener);

@@ -13,9 +13,12 @@ var Die = /** @class */ (function () {
         this.div.addEventListener('click', function () { return _this.singleReRoll(); });
         this.div.addEventListener('dblclick', function () { return _this.singleRemove(); });
     };
-    // Returns ID string from random seed & timestamp converted to base 36
-    // This is unneccesary for the scope of this project but is a nice feature to start implementing as projects get more complex
+    /*  This is nonfunctional and is only an attribute attached to the div,
+        and is unneccessary for the scope of this project,
+        but is a nice feature to start implementing as projects get more complex
+    */
     Die.prototype.createID = function () {
+        // Returns ID string from random seed & timestamp converted to base 36
         return Math.random().toString(36).substr(2, 16) + "_" + Date.now().toString(36);
     };
     Die.prototype.generate = function () {
@@ -49,7 +52,9 @@ var Die = /** @class */ (function () {
     /* Static class methods */
     /* ==================== */
     Die.multiRemove = function () {
-        Die.diceList.forEach(function (die) { return die.singleRemove(); });
+        for (var i = Die.diceList.length - 1; i >= 0; i--) {
+            Die.diceList[i].singleRemove();
+        }
     };
     Die.multiReRoll = function () {
         for (var i = Die.diceList.length - 1; i >= 0; i--) {

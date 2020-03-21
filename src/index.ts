@@ -29,9 +29,12 @@ class Die {
         this.div.addEventListener('dblclick', () => this.singleRemove());
     }
 
-    // Returns ID string from random seed & timestamp converted to base 36
-    // This is unneccesary for the scope of this project but is a nice feature to start implementing as projects get more complex
+    /*  This is nonfunctional and is only an attribute attached to the div,
+        and is unneccessary for the scope of this project,
+        but is a nice feature to start implementing as projects get more complex
+    */
     createID(): string {
+        // Returns ID string from random seed & timestamp converted to base 36
         return `${Math.random().toString(36).substr(2, 16)}_${Date.now().toString(36)}`;
     }
 
@@ -86,7 +89,9 @@ class Die {
     /* ==================== */
     
     static multiRemove() {
-        Die.diceList.forEach(die => die.singleRemove());
+        for (let i = Die.diceList.length - 1; i >= 0; i--) {
+            Die.diceList[i].singleRemove();
+        }
     }
     
     static multiReRoll() {

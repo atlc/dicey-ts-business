@@ -151,7 +151,7 @@ class Die {
             Die.multiReRoll();
             Swal.fire(
                 `d20 mode ${Die.isD20Mode ?  'activated!' : 'deactivated!'}`,
-                'This took a while to code & to source and create the images; how about you tossing a coin to support your local witchers?',
+                `Your luck check yielded a nat20! You successfully switched to using ${Die.maxDieValue}-sided dice.`,
                 `${Die.isD20Mode ?  'success' : 'error'}`
             );
         }

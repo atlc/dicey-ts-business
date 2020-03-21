@@ -97,7 +97,7 @@ var Die = /** @class */ (function () {
             Die.isD20Mode = !Die.isD20Mode;
             Die.maxDieValue = Die.isD20Mode ? 20 : 6;
             Die.multiReRoll();
-            Swal.fire("d20 mode " + (Die.isD20Mode ? 'activated!' : 'deactivated!'), 'This took a while to code & to source and create the images; how about you tossing a coin to support your local witchers?', "" + (Die.isD20Mode ? 'success' : 'error'));
+            Swal.fire("d20 mode " + (Die.isD20Mode ? 'activated!' : 'deactivated!'), "Your luck check yielded a nat20! You successfully switched to using " + Die.maxDieValue + "-sided dice.", "" + (Die.isD20Mode ? 'success' : 'error'));
         }
     };
     /* Static class properties */

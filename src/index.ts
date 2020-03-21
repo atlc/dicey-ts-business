@@ -1,143 +1,160 @@
-let Swal: any; // To suppress browser and TS warnings since it's pulled from the CDN
-let diceLog: Array<Die> = [];
-let diceContainer: HTMLElement = document.getElementById('diceContainer');
-let dieHTMLString: string;
-let imgPath: string;
-let maxDiceValue: number = 6; // Initializing as a standard dice roll, until d20 mode is activated
+declare let Swal: any; // To suppress browser and TS warnings since it's pulled from the CDN
 
 class Die {
-    value: number;
-    id: string;
-
     constructor() {
         this.value = this.roll();
         this.id = this.createID();
+        this.generate();
+        this.attachEventListeners();
+        Die.diceList.push(this);
     }
 
-    // Returns 16 digit ID string off Math.random() seed converted to base 36
+    
+    /* Instantiated properties */
+    /* ======================= */
+
+    value: number;
+    id: string;
+    div: HTMLElement;
+    figure: HTMLElement;
+    img: HTMLImageElement;
+    imageSource: string;
+
+
+    /* Instantiated methods */
+    /* ==================== */
+
+    attachEventListeners(): void {
+        this.div.addEventListener('click', () => this.singleReRoll());
+        this.div.addEventListener('dblclick', () => this.singleRemove());
+    }
+
+    // Returns ID string from random seed & timestamp converted to base 36
+    // This is unneccesary for the scope of this project but is a nice feature to start implementing as projects get more complex
     createID(): string {
-        return Math.random().toString(36).substr(2, 16);
+        return `${Math.random().toString(36).substr(2, 16)}_${Date.now().toString(36)}`;
+    }
+
+    generate(): void {
+        this.div = document.createElement('div');
+        this.div.id = this.id;
+        this.div.className = 'column';
+
+        this.figure = document.createElement('figure');
+        this.figure.className = 'image is-128x128';
+        
+        this.img = document.createElement('img');
+        this.updateImagePath();
+
+        this.figure.appendChild(this.img);
+        this.div.appendChild(this.figure);
+        document.querySelector('#diceContainer').appendChild(this.div);
     }
 
     roll(): number {
-        return Math.floor((Math.random() * maxDiceValue) + 1);
+        return Math.floor((Math.random() * Die.maxDieValue) + 1);
     }
-}
 
-function generateDie() {
-    let die:Die = new Die();
-    let dieDiv: HTMLDivElement = document.createElement('div');
-    dieDiv.className = 'column';
-    imgPath = d20mode ? `d20-${die.value}.png` : `dice0${die.value}.png`
-    dieHTMLString = `<figure class='image is-128x128'><img src="../assets/images/${imgPath}"></figure>`;
-    dieDiv.innerHTML = dieHTMLString;
-    dieDiv.addEventListener('click', () => rerollSingleDie(die.id));
-    dieDiv.addEventListener('dblclick', () => removeSingleDie(die.id));
-    diceContainer.appendChild(dieDiv);
-    diceLog.push(die);
-}
+    singleRemove(): void {
+        document.querySelector('#diceContainer').removeChild(this.div);
+        let index = Die.diceList.indexOf(this);
+        Die.diceList.splice(index, 1);
+    }
+    
+    singleReRoll(): void {
+        this.value = this.roll();
+        this.updateImagePath();
+    }
 
-let removeAllPrompt = () => {
-    Swal.fire({
-        title: 'Are you sure you want to delete your dice?',
-        text: "You won't ever be able to get them back!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete them!',
-        backdrop: `
-            rgba(123,0,0,0.4)
-            url("../assets/images/nyan-cat.gif")
-            left top
-            no-repeat
-        `
-      }).then((result) => {
-        if (result.value) {
-            removeAll();
-            Swal.fire({
-                title: 'Deleted!',
-                text: 'Your dice have been deleted.',
-                icon: 'success',
-                backdrop: `
-                    rgba(0,0,123,0.4)
-                    url("../assets/images/nyan-cat.gif")
-                    left top
-                    no-repeat
-                `
-            });
+    updateImagePath(): void {
+        this.imageSource = Die.isD20Mode ? `d20-${this.value}.png` : `dice0${this.value}.png`;
+        this.img.src = `../assets/images/${this.imageSource}`;
+    }
+
+
+    /* Static class properties */
+    /* ======================= */
+
+    private static d20KeypressSeries: string[] = ['d', '2', '0'];
+    private static diceList: Die[] = [];
+    private static isD20Mode: boolean = false;
+    private static maxDieValue: number = 6; // Initializing as a standard die roll, until d20 mode is activated
+    private static successfulKeypressCount: number = 0;
+
+
+    /* Static class methods */
+    /* ==================== */
+    
+    static multiRemove() {
+        Die.diceList.forEach(die => die.singleRemove());
+    }
+    
+    static multiReRoll() {
+        for (let i = Die.diceList.length - 1; i >= 0; i--) {
+            Die.diceList[i].singleReRoll();
         }
-    });
-}
+    }
 
-let removeAll = () => {
-    Array.prototype.slice.call(diceContainer.children).forEach(child => child.parentNode.removeChild(child))
-    diceLog = [];
-}
+    static promptForDeletion() {
+        Swal.fire({
+            title: 'Are you sure you want to delete your dice?',
+            text: "You won't ever be able to get them back!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete them!',
+            backdrop: `
+                rgba(123,0,0,0.4)
+                url("../assets/images/nyan-cat.gif")
+                left top
+                no-repeat
+            `
+          }).then((result: { value: boolean }) => {
+            if (result.value) {
+                Die.multiRemove();
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Your dice have been deleted.',
+                    icon: 'success',
+                    backdrop: `
+                        rgba(0,0,123,0.4)
+                        url("../assets/images/nyan-cat.gif")
+                        left top
+                        no-repeat
+                    `
+                });
+            }
+        });
+    }
 
-let reroll = () => {
-    diceLog.forEach((die, index) => {
-        die.value = die.roll();
-        imgPath = d20mode ? `d20-${die.value}.png` : `dice0${die.value}.png`;
-        dieHTMLString = `<figure class='image is-128x128'><img src="../assets/images/${imgPath}"></figure>`;
-        diceContainer.children[index].innerHTML = `${dieHTMLString}`;
-    });
-}
+    static sumFaces() {
+        const sum: number = Die.diceList.reduce((total, die) => (total += die.value), 0);
+        Swal.fire(`Dice face value totals are: ${sum}`);
+    }
 
-let rerollSingleDie = (dieID) => {
-    setTimeout(function() {
-        let dieIndex = diceLog.map((dice) => dice.id).indexOf(dieID);
-        if (diceLog[dieIndex]) {
-            diceLog[dieIndex].value = diceLog[dieIndex].roll();
-            imgPath = d20mode ? `d20-${diceLog[dieIndex].value}.png` : `dice0${diceLog[dieIndex].value}.png`
-            dieHTMLString = `<figure class='image is-128x128'><img src="../assets/images/${imgPath}"></figure>`;
-            diceContainer.children[dieIndex].innerHTML = dieHTMLString;   
+    static watchForDiceModeChange(e: KeyboardEvent) {
+        if (Die.d20KeypressSeries.indexOf(e.key) < 0 || e.key !== Die.d20KeypressSeries[Die.successfulKeypressCount]) {
+            return Die.successfulKeypressCount = 0;
         }
-    }, 175 );
-}
+        Die.successfulKeypressCount++;
 
-function removeSingleDie(dieID) {
-    let dieIndex = diceLog.map((dice) => dice.id).indexOf(dieID);
-    diceContainer.children[dieIndex].parentNode.removeChild(diceContainer.children[dieIndex]);
-    diceLog.splice(dieIndex, 1);
-}
-
-let sumTheDice = () => {
-    let vals:Array<number> = [];
-    diceLog.forEach(d => vals.push(d.value));
-    let sum = function(total: number, currentVal: number) { return total + currentVal } 
-    Swal.fire(
-        `Dice face value totals are: ${vals.reduce(sum, 0)}`
-    )
-}
-
-document.getElementById('genDie').addEventListener('click', generateDie);
-document.getElementById('reroll').addEventListener('click', reroll);
-document.getElementById('removeAll').addEventListener('click', removeAllPrompt);
-document.getElementById('sumTheDice').addEventListener('click', sumTheDice);
-
-let d20mode: boolean = false;
-let d20KeySeries: Array<string> = ['d', '2', '0'];
-let keyHits:number = 0;
-
-let d20listener = function(event) {
-    let e:KeyboardEvent = event;
-    if (d20KeySeries.indexOf(e.key) < 0 || e.key !== d20KeySeries[keyHits]) {
-        return keyHits = 0;
-    }
-    keyHits++;
-
-    if (keyHits === d20KeySeries.length) {
-        keyHits = 0;
-        removeAll();
-        d20mode = !d20mode;
-        maxDiceValue = d20mode ?  20 : 6;
-        Swal.fire(
-            `d20 mode ${d20mode ?  'activated!' : 'deactivated!'}`,
-            'This took a while to code & to source and create the images; how about you toss a beer my way? 😉',
-            `${d20mode ?  'success' : 'error'}`
-        );
+        if (Die.successfulKeypressCount === Die.d20KeypressSeries.length) {
+            Die.successfulKeypressCount = 0;
+            Die.isD20Mode = !Die.isD20Mode;
+            Die.maxDieValue = Die.isD20Mode ? 20 : 6;
+            Die.multiReRoll();
+            Swal.fire(
+                `d20 mode ${Die.isD20Mode ?  'activated!' : 'deactivated!'}`,
+                'This took a while to code & to source and create the images; how about you tossing a coin to support your local witchers?',
+                `${Die.isD20Mode ?  'success' : 'error'}`
+            );
+        }
     }
 }
 
-document.addEventListener('keydown', d20listener);
+document.getElementById('genDie').addEventListener('click', () => new Die());
+document.getElementById('reroll').addEventListener('click', Die.multiReRoll);
+document.getElementById('removeAll').addEventListener('click', Die.promptForDeletion);
+document.getElementById('sumTheDice').addEventListener('click', Die.sumFaces);
+document.addEventListener('keydown', Die.watchForDiceModeChange);
